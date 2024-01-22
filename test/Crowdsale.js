@@ -692,7 +692,7 @@ describe("CratCrowdsale", function () {
                 const totalSaleUsdtBalance = amountToBuyZero.add(amountToBuyOne).add(amountToBuyTwo).add(amountToBuyThree).
                     add(amountToBuyFour).add(amountToBuyFive).add(amountToBuySix);
                 const userInfo = await sale.userInfo(userOne.address);
-                expect(userInfo.referralFather).to.equal(zeroAddress);
+                expect(userInfo.referralFather).to.equal(userTwo.address);
                 expect(totalSaleUsdtBalance).to.equal(withDecimals("20250"));
             });
 
@@ -910,7 +910,7 @@ describe("CratCrowdsale", function () {
                 expect(userCratBalanceBefore.add(craftTotalTokensAmount)).to.equal(userCratBalanceAfter);
             });
 
-            it("Should no change father with zero spend amount", async function () {
+            it("Should set father even with zero spend amount", async function () {
                 const { token, sale, usdt, userOne, userTwo } = await loadFixture(deployCrowdsaleFixture);
 
                 const zeroAddress = ethers.constants.AddressZero;
@@ -923,7 +923,7 @@ describe("CratCrowdsale", function () {
                 await sale.connect(userOne).buyCratTokens(usdt.address, stableAmountOne, userTwo.address);
 
                 const fatherAddressAfter = await sale.userInfo(userOne.address);
-                expect(fatherAddressAfter.referralFather).to.equal(zeroAddress);
+                expect(fatherAddressAfter.referralFather).to.equal(userTwo.address);
 
                 const saleUsdtBalanceBefore = await usdt.balanceOf(sale.address);
                 const userUsdtBalanceBefore = await usdt.balanceOf(userOne.address);
@@ -933,7 +933,7 @@ describe("CratCrowdsale", function () {
 
                 const tokensToBuy = withDecimals("2000");
                 const craftStableAmount = withDecimals("400");
-                const craftRefundAmount = withDecimals("0");
+                const craftRefundAmount = withDecimals("40");
                 const craftBonusStablesAmount = withDecimals("10");
                 const craftBonusTokensAmount = withDecimals("50");
                 const stableAmount = await sale.calculateStableAmount(tokensToBuy);
@@ -945,7 +945,7 @@ describe("CratCrowdsale", function () {
                 expect(craftBonusTokensAmount).to.equal(bonusTokensAmount);
 
                 await usdt.connect(userOne).approve(sale.address, stableAmount);
-                await sale.connect(userOne).buyCratTokens(usdt.address, stableAmount, userTwo.address);
+                await sale.connect(userOne).buyCratTokens(usdt.address, stableAmount, zeroAddress);
 
                 const saleUsdtBalanceAfter = await usdt.balanceOf(sale.address);
                 const userUsdtBalanceAfter = await usdt.balanceOf(userOne.address);
@@ -954,7 +954,7 @@ describe("CratCrowdsale", function () {
                 const userCratBalanceAfter = await token.balanceOf(userOne.address);
 
                 const fatherAddressAfterTwo = await sale.userInfo(userOne.address);
-                expect(fatherAddressAfterTwo.referralFather).to.equal(zeroAddress);
+                expect(fatherAddressAfterTwo.referralFather).to.equal(userTwo.address);
 
                 expect(saleUsdtBalanceBefore.add(underlyingSaleAmount)).to.equal(saleUsdtBalanceAfter);
                 expect(userUsdtBalanceBefore.sub(stableAmount)).to.equal(userUsdtBalanceAfter);
@@ -1101,7 +1101,7 @@ describe("CratCrowdsale", function () {
                 await sale.connect(userOne).buyCratTokens(usdt.address, amountToBuy, sale.address);
 
                 const userInfo = await sale.userInfo(userOne.address);
-                expect(userInfo.referralFather).to.equal(userTwo.address);
+                expect(userInfo.referralFather).to.equal(sale.address);
             });
         });
     });

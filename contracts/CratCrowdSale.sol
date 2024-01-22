@@ -47,6 +47,7 @@ contract CratCrowdsale is ICratCrowdsale, Ownable, ReentrancyGuard, Pausable {
         uint referralRefund, 
         uint time
     );
+    event ReferralAdded(address user, address fatherAddress);
     
     constructor(
         address _admin,
@@ -181,11 +182,11 @@ contract CratCrowdsale is ICratCrowdsale, Ownable, ReentrancyGuard, Pausable {
     {
         if(
             userInfo[_user].referralFather == address(0) && 
-            _user != _fatherAddress && 
-            userInfo[_fatherAddress].totalSpend > 0
+            _user != _fatherAddress
         )
         {
             userInfo[_user].referralFather = _fatherAddress;
+            emit ReferralAdded(_user, _fatherAddress);
         } 
         address _referralFather = userInfo[_user].referralFather;
         if(_referralFather != address(0)){

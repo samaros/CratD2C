@@ -1,0 +1,14 @@
+node_modules
+.env
+
+typechain
+typechain-types
+
+coverage
+coverage.json
+coverageEnv
+
+package-lock.json
+
+cache
+artifacts
