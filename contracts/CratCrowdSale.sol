@@ -38,6 +38,8 @@ contract CratCrowdsale is ICratCrowdsale, Ownable, ReentrancyGuard, Pausable {
         address referralFather;
     }
 
+    event RefundInterestChanged(uint256 newRefundInterest);
+    event TokensWithdrawn(address token, uint256 amount);
     event PriceUpdate(uint newPrice, uint time);
     event Purchase(
         address indexed user, 
@@ -56,6 +58,8 @@ contract CratCrowdsale is ICratCrowdsale, Ownable, ReentrancyGuard, Pausable {
         address _usdc
     )
     {
+        require(_admin != address(0) && _cratToken != address(0)
+            && _usdt != address(0) && _usdc != address(0), "CratCrowdsale: zero address");
         transferOwnership(_admin);
         cratToken = _cratToken;
         usdtAddress = _usdt;
@@ -109,6 +113,7 @@ contract CratCrowdsale is ICratCrowdsale, Ownable, ReentrancyGuard, Pausable {
     function changeRefundInterest(uint newRefundInterest)external onlyOwner(){
         require(MAX_REFUND_INTEREST >= newRefundInterest, "CratCrowdsale: invalid new refund interest value");
         referralRefundInterest = newRefundInterest;
+        emit RefundInterestChanged(newRefundInterest);
     } 
 
     /**
@@ -129,6 +134,7 @@ contract CratCrowdsale is ICratCrowdsale, Ownable, ReentrancyGuard, Pausable {
     {
         _verifyAmount(amount);
         IERC20(token).safeTransfer(receiver, amount);
+        emit TokensWithdrawn(token, amount);
     } 
 
     /**
@@ -182,6 +188,7 @@ contract CratCrowdsale is ICratCrowdsale, Ownable, ReentrancyGuard, Pausable {
     {
         if(
             userInfo[_user].referralFather == address(0) && 
+            _fatherAddress != address(0) && 
             _user != _fatherAddress
         )
         {
