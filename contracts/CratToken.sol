@@ -12,6 +12,7 @@ contract CratToken is ERC20Burnable, AccessControl {
     bytes32 public constant BRIDGE_ROLE = keccak256("BRIDGE_ROLE");
 
     constructor(address _admin) ERC20("CratD2C-Pre", "CratD2C-Pre"){
+        require(_admin != address(0), "CratToken: zero address");
         _setupRole(DEFAULT_ADMIN_ROLE, _admin);
         _setupRole(BRIDGE_ROLE, address(0));
         _mint(_admin, PREMINT_AMOUNT);
