@@ -106,11 +106,20 @@ contract CratCrowdsale is ICratCrowdsale, Ownable, ReentrancyGuard, Pausable {
     }
 
     /**
+     * @notice function to unpause the crowdsale
+     * @notice only {_owner} available
+     */
+    function unpause()external onlyOwner(){
+        super._unpause();
+    }
+
+    /**
      * @notice function to change {referralRefundInterest}
+     * @notice available only when paused
      * @notice only {_owner} available
      * @param newRefundInterest new {referralRefundInterest} value
      */
-    function changeRefundInterest(uint newRefundInterest)external onlyOwner(){
+    function changeRefundInterest(uint newRefundInterest)external whenPaused() onlyOwner(){
         require(MAX_REFUND_INTEREST >= newRefundInterest, "CratCrowdsale: invalid new refund interest value");
         referralRefundInterest = newRefundInterest;
         emit RefundInterestChanged(newRefundInterest);

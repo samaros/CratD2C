@@ -7,7 +7,7 @@ describe("CratCrowdsale", function () {
 
         const [admin, userOne, userTwo, deployer] = await ethers.getSigners();
 
-        const CratToken = await ethers.getContractFactory("CratToken", admin);
+        const CratToken = await ethers.getContractFactory("CratD2CPre", admin);
         const token = await CratToken.deploy(admin.address);
         await token.deployed();
 
@@ -383,14 +383,18 @@ describe("CratCrowdsale", function () {
             await usdt.connect(userOne).approve(sale.address, stablesToPayThree);
             await sale.connect(userOne).buyCratTokens(usdt.address, stablesToPayThree, userTwo.address);
 
+            await sale.connect(admin).pause();
             await sale.connect(admin).changeRefundInterest(3500);
+            await sale.connect(admin).unpause();
 
             const stablesToPayFour = withDecimals("123000");
 
             await usdt.connect(userTwo).approve(sale.address, stablesToPayFour);
             await sale.connect(userTwo).buyCratTokens(usdt.address, stablesToPayFour, userOne.address);
 
+            await sale.connect(admin).pause();
             await sale.connect(admin).changeRefundInterest(1234);
+            await sale.connect(admin).unpause();
 
             const stablesToPayFive = withDecimals("12300");
 
@@ -416,7 +420,9 @@ describe("CratCrowdsale", function () {
             await usdt.connect(userTwo).approve(sale.address, stablesToPayEight);
             await sale.connect(userTwo).buyCratTokens(usdt.address, stablesToPayEight, zeroAddress);
 
+            await sale.connect(admin).pause();
             await sale.connect(admin).changeRefundInterest(0);
+            await sale.connect(admin).unpause();
 
             const stablesToPayNine = withDecimals("99000");
 
@@ -1346,9 +1352,22 @@ describe("CratCrowdsale", function () {
     });
 
     describe("Change refund interest", function () {
+        it("Should only be available while paused", async function () {
+            const { sale, admin } = await loadFixture(deployCrowdsaleFixture);
+
+            const newInterest = 1;
+            await expect(sale.connect(admin).changeRefundInterest(newInterest)).to.be.revertedWith(
+                "Pausable: not paused"
+            );
+            await sale.connect(admin).pause();
+            await sale.connect(admin).changeRefundInterest(newInterest);
+            expect(await sale.referralRefundInterest()).equal(newInterest);
+        });
+
         it("Should revert change wrong value", async function () {
             const { sale, admin } = await loadFixture(deployCrowdsaleFixture);
 
+            await sale.connect(admin).pause();
             const newInterest = 10001;
             await expect(sale.connect(admin).changeRefundInterest(newInterest)).to.be.revertedWith(
                 "CratCrowdsale: invalid new refund interest value"
@@ -1358,6 +1377,7 @@ describe("CratCrowdsale", function () {
         it("Should pass change zero value", async function () {
             const { sale, admin } = await loadFixture(deployCrowdsaleFixture);
 
+            await sale.connect(admin).pause();
             const maxInterest = await sale.MAX_REFUND_INTEREST();
             const initInterest = await sale.referralRefundInterest();
 
@@ -1400,7 +1420,9 @@ describe("CratCrowdsale", function () {
             const newRate = 5000;
             const stablesToRefund = withDecimals("500");
 
+            await sale.connect(admin).pause();
             await sale.connect(admin).changeRefundInterest(newRate);
+            await sale.connect(admin).unpause();
             await usdt.connect(userOne).approve(sale.address, stablesToPay);
             await sale.connect(userOne).buyCratTokens(usdt.address, stablesToPay, userTwo.address);
 
@@ -1446,7 +1468,9 @@ describe("CratCrowdsale", function () {
             const newRate = 10000;
             const stablesToRefund = withDecimals("1000");
 
+            await sale.connect(admin).pause();
             await sale.connect(admin).changeRefundInterest(newRate);
+            await sale.connect(admin).unpause();
             await usdt.connect(userOne).approve(sale.address, stablesToPay);
             await sale.connect(userOne).buyCratTokens(usdt.address, stablesToPay, userTwo.address);
 
@@ -1588,9 +1612,20 @@ describe("CratCrowdsale", function () {
             );
         });
 
-        it("Should revert change interest rate by not an owner", async function () {
-            const { sale, userOne } = await loadFixture(deployCrowdsaleFixture);
+        it("Should revert unpause by not an owner", async function () {
+            const { sale, userOne, admin } = await loadFixture(deployCrowdsaleFixture);
 
+            await sale.connect(admin).pause();
+
+            await expect(sale.connect(userOne).unpause()).to.be.revertedWith(
+                "Ownable: caller is not the owner"
+            );
+        });
+
+        it("Should revert change interest rate by not an owner", async function () {
+            const { sale, userOne, admin } = await loadFixture(deployCrowdsaleFixture);
+
+            await sale.connect(admin).pause();
             const newInterestRate = 1567;
 
             await expect(sale.connect(userOne).changeRefundInterest(newInterestRate)).to.be.revertedWith(

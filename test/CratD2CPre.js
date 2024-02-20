@@ -1,12 +1,12 @@
 const { loadFixture } = require("@nomicfoundation/hardhat-network-helpers");
 const { expect } = require("chai");
 
-describe("CratToken", function () {
+describe("CratD2CPre", function () {
     async function deployCratTokenFixture() {
 
         const [admin, user, deployer] = await ethers.getSigners();
 
-        const CratToken = await ethers.getContractFactory("CratToken", deployer);
+        const CratToken = await ethers.getContractFactory("CratD2CPre", deployer);
         const token = await CratToken.deploy(admin.address);
         await token.deployed();
 
@@ -31,7 +31,7 @@ describe("CratToken", function () {
 
         const [admin, user, deployer] = await ethers.getSigners();
 
-        const CratToken = await ethers.getContractFactory("CratToken", deployer);
+        const CratToken = await ethers.getContractFactory("CratD2CPre", deployer);
         const token = await CratToken.deploy(admin.address);
         await token.deployed();
 
@@ -56,7 +56,7 @@ describe("CratToken", function () {
 
         const [admin, user, deployer] = await ethers.getSigners();
 
-        const CratToken = await ethers.getContractFactory("CratToken", deployer);
+        const CratToken = await ethers.getContractFactory("CratD2CPre", deployer);
         const token = await CratToken.deploy(admin.address);
         await token.deployed();
 
@@ -94,7 +94,7 @@ describe("CratToken", function () {
             const amount = 1;
 
             await expect(token.connect(user).transfer(token.address, amount)).to.be.revertedWith(
-                "CratToken: invalid call"
+                "CratD2CPre: invalid call"
             );
         });
 
@@ -106,7 +106,7 @@ describe("CratToken", function () {
             await token.connect(deployer).approve(user.address, amount);
 
             await expect(token.connect(user).transferFrom(deployer.address, user.address, amount)).to.be.revertedWith(
-                "CratToken: invalid call"
+                "CratD2CPre: invalid call"
             );
         });
 
@@ -191,7 +191,7 @@ describe("CratToken", function () {
             await token.connect(admin).grantRole(crowdsaleRole, sale.address);
 
             await expect(token.connect(user).transfer(sale.address, amount)).to.be.revertedWith(
-                "CratToken: invalid call"
+                "CratD2CPre: invalid call"
             );
         });
 
@@ -229,7 +229,7 @@ describe("CratToken", function () {
             await token.connect(user).approve(bridge.address, tokensAmount);
 
             await expect(bridge.connect(user).swap(stablesAmount)).to.be.revertedWith(
-                "CratToken: invalid call"
+                "CratD2CPre: invalid call"
             );
         });
 
