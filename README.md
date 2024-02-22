@@ -20,4 +20,4 @@ Token price based on collected investments:
 
 800 000$ - 899 999$ - $0.29
 
->= 900 000$  - $0.30
+\>= 900 000$  - $0.30
