@@ -67,6 +67,19 @@ contract CratCrowdsale is ICratCrowdsale, Ownable, ReentrancyGuard, Pausable {
     }
 
     /**
+     * @notice function to calculate referral amount
+     * @param user user address to buy token
+     * @param fatherAddress address which will be specified in buyCratTokens function as fatherAddress
+     * @param stablesAmount stablecoin amount which will be specified in buyCratTokens function as stablesAmount
+     * @return refundAmount referral refund amount to be expected
+     */
+    function calculateReferralRefundAmount(address user, address fatherAddress, uint256 stablesAmount) external view returns(uint256 refundAmount) {
+        if (userInfo[user].referralFather != address(0) || (fatherAddress != address(0) && user != fatherAddress)) {
+            refundAmount = stablesAmount * referralRefundInterest / MAX_REFUND_INTEREST;
+        }
+    }
+
+    /**
      * @notice function to buy {cratToken}
      * @notice only not paused available
      * @param stableCoin stablecoin smart contract address to pay
@@ -76,7 +89,8 @@ contract CratCrowdsale is ICratCrowdsale, Ownable, ReentrancyGuard, Pausable {
     function buyCratTokens(
         address stableCoin, 
         uint stablesAmount, 
-        address fatherAddress
+        address fatherAddress,
+        uint minRefundAmount
     )
         external 
         whenNotPaused() 
@@ -87,6 +101,7 @@ contract CratCrowdsale is ICratCrowdsale, Ownable, ReentrancyGuard, Pausable {
         _verifyAmount(stablesAmount);
         uint _tokensAmount = calculateTokensAmount(stablesAmount);
         uint _refundAmount = _referralRefund(_user, fatherAddress, stableCoin, stablesAmount);
+        require(_refundAmount >= minRefundAmount, "CratCrowdsale: minRefundAmount not met");
         uint _bonusStables = _updateTier(_user, stablesAmount);
         uint _bonusTokens = calculateTokensAmount(_bonusStables);
         userInfo[_user].bonusTokensReceived += _bonusTokens;

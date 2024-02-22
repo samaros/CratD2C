@@ -55,7 +55,7 @@ describe("CratCrowdsale", function () {
         expect(totalRaisedBefore).to.equal(0);
 
         await usdt.connect(userOne).approve(sale.address, stablesToPay);
-        await sale.connect(userOne).buyCratTokens(usdt.address, stablesToPay, userOne.address);
+        await sale.connect(userOne).buyCratTokens(usdt.address, stablesToPay, userOne.address, await sale.calculateReferralRefundAmount(userOne.address, userOne.address, stablesToPay));
 
         const saleUsdtBalanceAfter = await usdt.balanceOf(sale.address);
         const userUsdtBalanceAfter = await usdt.balanceOf(userOne.address);
@@ -95,7 +95,7 @@ describe("CratCrowdsale", function () {
         expect(craftBonusTokensAmount).to.equal(bonusTokensAmount);
 
         await usdt.connect(userOne).approve(sale.address, stablesToPay);
-        await sale.connect(userOne).buyCratTokens(usdt.address, stablesToPay, userOne.address);
+        await sale.connect(userOne).buyCratTokens(usdt.address, stablesToPay, userOne.address, await sale.calculateReferralRefundAmount(userOne.address, userOne.address, stablesToPay));
 
         const saleUsdtBalanceAfter = await usdt.balanceOf(sale.address);
         const userUsdtBalanceAfter = await usdt.balanceOf(userOne.address);
@@ -122,7 +122,7 @@ describe("CratCrowdsale", function () {
         expect(bonusTokensAmountTwo).to.equal(craftBonusTokensAmountTwo);
 
         await usdt.connect(userOne).approve(sale.address, stablesToPayTwo);
-        await sale.connect(userOne).buyCratTokens(usdt.address, stablesToPayTwo, userOne.address);
+        await sale.connect(userOne).buyCratTokens(usdt.address, stablesToPayTwo, userOne.address, await sale.calculateReferralRefundAmount(userOne.address, userOne.address, stablesToPayTwo));
 
         const saleUsdtBalanceAfterTwo = await usdt.balanceOf(sale.address);
         const userUsdtBalanceAfterTwo = await usdt.balanceOf(userOne.address);
@@ -153,7 +153,7 @@ describe("CratCrowdsale", function () {
         const stableAmount = await sale.calculateStableAmount(tokensToBuy);
 
         await usdt.connect(userTwo).approve(sale.address, stableAmount);
-        await sale.connect(userTwo).buyCratTokens(usdt.address, stableAmount, userTwo.address);
+        await sale.connect(userTwo).buyCratTokens(usdt.address, stableAmount, userTwo.address, await sale.calculateReferralRefundAmount(userTwo.address, userTwo.address, stableAmount));
 
         const priceAfter = await sale.currentTokenPrice();
 
@@ -173,19 +173,19 @@ describe("CratCrowdsale", function () {
 
         const stableAmountOne = await sale.calculateStableAmount(tokensToBuyOne);
         await usdt.connect(userTwo).approve(sale.address, stableAmountOne);
-        await sale.connect(userTwo).buyCratTokens(usdt.address, stableAmountOne, userTwo.address);
+        await sale.connect(userTwo).buyCratTokens(usdt.address, stableAmountOne, userTwo.address, await sale.calculateReferralRefundAmount(userTwo.address, userTwo.address, stableAmountOne));
 
         const stableAmountTwo = await sale.calculateStableAmount(tokensToBuyTwo);
         await usdt.connect(userOne).approve(sale.address, stableAmountTwo);
-        await sale.connect(userOne).buyCratTokens(usdt.address, stableAmountTwo, userOne.address);
+        await sale.connect(userOne).buyCratTokens(usdt.address, stableAmountTwo, userOne.address, await sale.calculateReferralRefundAmount(userOne.address, userOne.address, stableAmountTwo));
 
         const stableAmountThree = await sale.calculateStableAmount(tokensToBuyThree);
         await usdt.connect(userTwo).approve(sale.address, stableAmountThree);
-        await sale.connect(userTwo).buyCratTokens(usdt.address, stableAmountThree, userTwo.address);
+        await sale.connect(userTwo).buyCratTokens(usdt.address, stableAmountThree, userTwo.address, await sale.calculateReferralRefundAmount(userTwo.address, userTwo.address, stableAmountThree));
 
         const stableAmountFour = await sale.calculateStableAmount(tokensToBuyFour);
         await usdt.connect(userOne).approve(sale.address, stableAmountFour);
-        await sale.connect(userOne).buyCratTokens(usdt.address, stableAmountFour, userOne.address);
+        await sale.connect(userOne).buyCratTokens(usdt.address, stableAmountFour, userOne.address, await sale.calculateReferralRefundAmount(userOne.address, userOne.address, stableAmountFour));
 
         const priceAfter = await sale.currentTokenPrice();
         expect(priceAfter).to.equal(finishPriceTarget);
@@ -198,7 +198,7 @@ describe("CratCrowdsale", function () {
 
         const tokensToBuyUserTwo = withDecimals("1000");
         await usdt.connect(userTwo).approve(sale.address, tokensToBuyUserTwo);
-        await sale.connect(userTwo).buyCratTokens(usdt.address, tokensToBuyUserTwo, userTwo.address);
+        await sale.connect(userTwo).buyCratTokens(usdt.address, tokensToBuyUserTwo, userTwo.address, await sale.calculateReferralRefundAmount(userTwo.address, userTwo.address, tokensToBuyUserTwo));
 
         const maxInterest = await sale.MAX_REFUND_INTEREST();
         const initInterest = await sale.referralRefundInterest();
@@ -225,7 +225,7 @@ describe("CratCrowdsale", function () {
         expect(referralRefundAmount).to.equal(craftRefundAmount);
 
         await usdt.connect(userOne).approve(sale.address, tokensToBuy);
-        await sale.connect(userOne).buyCratTokens(usdt.address, tokensToBuy, fatherAddress);
+        await sale.connect(userOne).buyCratTokens(usdt.address, tokensToBuy, fatherAddress, await sale.calculateReferralRefundAmount(userOne.address, fatherAddress, tokensToBuy));
 
         const saleUsdtBalanceAfter = await usdt.balanceOf(sale.address);
         const userUsdtBalanceAfter = await usdt.balanceOf(userOne.address);
@@ -291,7 +291,7 @@ describe("CratCrowdsale", function () {
 
             const tokensToBuy = withDecimals("100");
 
-            await expect(sale.connect(userOne).buyCratTokens(token.address, tokensToBuy, userOne.address)).to.be.revertedWith(
+            await expect(sale.connect(userOne).buyCratTokens(token.address, tokensToBuy, userOne.address, 0)).to.be.revertedWith(
                 "CratCrowdsale: invalid stablecoin"
             );
         });
@@ -301,7 +301,7 @@ describe("CratCrowdsale", function () {
 
             const stablesAmount = 0;
 
-            await expect(sale.connect(userOne).buyCratTokens(usdt.address, stablesAmount, userOne.address)).to.be.revertedWith(
+            await expect(sale.connect(userOne).buyCratTokens(usdt.address, stablesAmount, userOne.address, 0)).to.be.revertedWith(
                 "CratCrowdsale: invalid amount"
             );
         });
@@ -311,7 +311,7 @@ describe("CratCrowdsale", function () {
 
             const tokensToBuy = withDecimals("10000001");;
 
-            await expect(sale.connect(userOne).buyCratTokens(usdt.address, tokensToBuy, userOne.address)).to.be.revertedWith(
+            await expect(sale.connect(userOne).buyCratTokens(usdt.address, tokensToBuy, userOne.address, 0)).to.be.revertedWith(
                 "ERC20: transfer amount exceeds balance"
             );
         });
@@ -323,7 +323,7 @@ describe("CratCrowdsale", function () {
             await usdt.connect(userOne).approve(sale.address, userBalance);
             const tokensToBuy = withDecimals("1");;
 
-            await expect(sale.connect(userOne).buyCratTokens(usdt.address, tokensToBuy, userOne.address)).to.be.revertedWith(
+            await expect(sale.connect(userOne).buyCratTokens(usdt.address, tokensToBuy, userOne.address, 0)).to.be.revertedWith(
                 "ERC20: transfer amount exceeds balance"
             );
         });
@@ -333,7 +333,7 @@ describe("CratCrowdsale", function () {
 
             const tokensToBuy = withDecimals("1000");;
 
-            await expect(sale.connect(userOne).buyCratTokens(usdt.address, tokensToBuy, userOne.address)).to.be.revertedWith(
+            await expect(sale.connect(userOne).buyCratTokens(usdt.address, tokensToBuy, userOne.address, 0)).to.be.revertedWith(
                 "ERC20: insufficient allowance"
             );
         });
@@ -367,7 +367,7 @@ describe("CratCrowdsale", function () {
             expect(tokensAmount).to.equal(craftTokensAmount);
 
             await usdt.connect(userOne).approve(sale.address, stablesToPay);
-            await sale.connect(userOne).buyCratTokens(usdt.address, stablesToPay, zeroAddress);
+            await sale.connect(userOne).buyCratTokens(usdt.address, stablesToPay, zeroAddress, await sale.calculateReferralRefundAmount(userOne.address, zeroAddress, stablesToPay));
 
             const stablesToPayTwo = withDecimals("4500");
             const tokensAmountTwo = await sale.calculateTokensAmount(stablesToPayTwo);
@@ -376,12 +376,12 @@ describe("CratCrowdsale", function () {
             expect(craftTokensAmountTwo).to.equal(tokensAmountTwo);
 
             await usdt.connect(userTwo).approve(sale.address, stablesToPayTwo);
-            await sale.connect(userTwo).buyCratTokens(usdt.address, stablesToPayTwo, zeroAddress);
+            await sale.connect(userTwo).buyCratTokens(usdt.address, stablesToPayTwo, zeroAddress, await sale.calculateReferralRefundAmount(userTwo.address, zeroAddress, stablesToPayTwo));
 
             const stablesToPayThree = withDecimals("100000");
 
             await usdt.connect(userOne).approve(sale.address, stablesToPayThree);
-            await sale.connect(userOne).buyCratTokens(usdt.address, stablesToPayThree, userTwo.address);
+            await sale.connect(userOne).buyCratTokens(usdt.address, stablesToPayThree, userTwo.address, await sale.calculateReferralRefundAmount(userOne.address, userTwo.address, stablesToPayThree));
 
             await sale.connect(admin).pause();
             await sale.connect(admin).changeRefundInterest(3500);
@@ -390,7 +390,7 @@ describe("CratCrowdsale", function () {
             const stablesToPayFour = withDecimals("123000");
 
             await usdt.connect(userTwo).approve(sale.address, stablesToPayFour);
-            await sale.connect(userTwo).buyCratTokens(usdt.address, stablesToPayFour, userOne.address);
+            await sale.connect(userTwo).buyCratTokens(usdt.address, stablesToPayFour, userOne.address, await sale.calculateReferralRefundAmount(userTwo.address, userOne.address, stablesToPayFour));
 
             await sale.connect(admin).pause();
             await sale.connect(admin).changeRefundInterest(1234);
@@ -399,12 +399,12 @@ describe("CratCrowdsale", function () {
             const stablesToPayFive = withDecimals("12300");
 
             await usdt.connect(userTwo).approve(sale.address, stablesToPayFive);
-            await sale.connect(userTwo).buyCratTokens(usdt.address, stablesToPayFive, admin.address);
+            await sale.connect(userTwo).buyCratTokens(usdt.address, stablesToPayFive, admin.address, await sale.calculateReferralRefundAmount(userTwo.address, admin.address, stablesToPayFive));
 
             const stablesToPaySix = withDecimals("100000");
 
             await usdt.connect(userOne).approve(sale.address, stablesToPaySix);
-            await sale.connect(userOne).buyCratTokens(usdt.address, stablesToPaySix, userOne.address);
+            await sale.connect(userOne).buyCratTokens(usdt.address, stablesToPaySix, userOne.address, await sale.calculateReferralRefundAmount(userOne.address, userOne.address, stablesToPaySix));
 
             await sale.connect(admin).withdrawTokens(token.address, admin.address, stablesToPayFive);
             await sale.connect(admin).withdrawTokens(token.address, userTwo.address, stablesToPayFive);
@@ -413,12 +413,12 @@ describe("CratCrowdsale", function () {
             const stablesToPaySeven = withDecimals("12399");
 
             await usdt.connect(userTwo).approve(sale.address, stablesToPaySeven);
-            await sale.connect(userTwo).buyCratTokens(usdt.address, stablesToPaySeven, sale.address);
+            await sale.connect(userTwo).buyCratTokens(usdt.address, stablesToPaySeven, sale.address, await sale.calculateReferralRefundAmount(userTwo.address, sale.address, stablesToPaySeven));
 
             const stablesToPayEight = withDecimals("12399");
 
             await usdt.connect(userTwo).approve(sale.address, stablesToPayEight);
-            await sale.connect(userTwo).buyCratTokens(usdt.address, stablesToPayEight, zeroAddress);
+            await sale.connect(userTwo).buyCratTokens(usdt.address, stablesToPayEight, zeroAddress, await sale.calculateReferralRefundAmount(userTwo.address, zeroAddress, stablesToPayEight));
 
             await sale.connect(admin).pause();
             await sale.connect(admin).changeRefundInterest(0);
@@ -427,7 +427,7 @@ describe("CratCrowdsale", function () {
             const stablesToPayNine = withDecimals("99000");
 
             await usdt.connect(userTwo).approve(sale.address, stablesToPayNine);
-            await sale.connect(userTwo).buyCratTokens(usdt.address, stablesToPayNine, userOne.address);
+            await sale.connect(userTwo).buyCratTokens(usdt.address, stablesToPayNine, userOne.address, await sale.calculateReferralRefundAmount(userTwo.address, userOne.address, stablesToPayNine));
 
             await sale.connect(admin).withdrawTokens(token.address, admin.address, stablesToPayTwo);
             await sale.connect(admin).withdrawTokens(token.address, userOne.address, stablesToPayTwo);
@@ -436,7 +436,7 @@ describe("CratCrowdsale", function () {
             const stablesToPayTen = withDecimals("12300");
 
             await usdt.connect(admin).approve(sale.address, stablesToPayTen);
-            await sale.connect(admin).buyCratTokens(usdt.address, stablesToPayTen, userOne.address);
+            await sale.connect(admin).buyCratTokens(usdt.address, stablesToPayTen, userOne.address, await sale.calculateReferralRefundAmount(admin.address, userOne.address, stablesToPayTen));
 
             const saleUsdtBalanceAfter = await usdt.balanceOf(sale.address);
             const userUsdtBalanceAfter = await usdt.balanceOf(userOne.address);
@@ -549,7 +549,7 @@ describe("CratCrowdsale", function () {
                 expect(craftBonusTokensAmount).to.equal(bonusTokensAmount);
 
                 await usdt.connect(userOne).approve(sale.address, stablesToPay);
-                await sale.connect(userOne).buyCratTokens(usdt.address, stablesToPay, userOne.address);
+                await sale.connect(userOne).buyCratTokens(usdt.address, stablesToPay, userOne.address, await sale.calculateReferralRefundAmount(userOne.address, userOne.address, stablesToPay));
 
                 const saleUsdtBalanceAfter = await usdt.balanceOf(sale.address);
                 const userUsdtBalanceAfter = await usdt.balanceOf(userOne.address);
@@ -573,7 +573,7 @@ describe("CratCrowdsale", function () {
                 expect(craftTotalTokensAmountTwo).to.equal(tokensAmountTwo);
 
                 await usdc.connect(userOne).approve(sale.address, stablesToPayTwo);
-                await sale.connect(userOne).buyCratTokens(usdc.address, stablesToPayTwo, userOne.address);
+                await sale.connect(userOne).buyCratTokens(usdc.address, stablesToPayTwo, userOne.address, await sale.calculateReferralRefundAmount(userOne.address, userOne.address, stablesToPayTwo));
 
                 const saleUsdcBalanceAfter = await usdc.balanceOf(sale.address);
                 const userUsdcBalanceAfter = await usdc.balanceOf(userOne.address);
@@ -687,13 +687,13 @@ describe("CratCrowdsale", function () {
                 const amountToBuyFive = withDecimals("5000");
                 const amountToBuySix = withDecimals("10000");
 
-                await sale.connect(userOne).buyCratTokens(usdt.address, amountToBuyZero, userOne.address);
-                await sale.connect(userOne).buyCratTokens(usdt.address, amountToBuyOne, zeroAddress);
-                await sale.connect(userOne).buyCratTokens(usdt.address, amountToBuyTwo, userOne.address);
-                await sale.connect(userOne).buyCratTokens(usdt.address, amountToBuyThree, userTwo.address);
-                await sale.connect(userOne).buyCratTokens(usdt.address, amountToBuyFour, userTwo.address);
-                await sale.connect(userOne).buyCratTokens(usdt.address, amountToBuyFive, zeroAddress);
-                await sale.connect(userOne).buyCratTokens(usdt.address, amountToBuySix, userOne.address);
+                await sale.connect(userOne).buyCratTokens(usdt.address, amountToBuyZero, userOne.address, await sale.calculateReferralRefundAmount(userOne.address, userOne.address, amountToBuyZero));
+                await sale.connect(userOne).buyCratTokens(usdt.address, amountToBuyOne, zeroAddress, await sale.calculateReferralRefundAmount(userOne.address, zeroAddress, amountToBuyOne));
+                await sale.connect(userOne).buyCratTokens(usdt.address, amountToBuyTwo, userOne.address, await sale.calculateReferralRefundAmount(userOne.address, userOne.address, amountToBuyTwo));
+                await sale.connect(userOne).buyCratTokens(usdt.address, amountToBuyThree, userTwo.address, await sale.calculateReferralRefundAmount(userOne.address, userTwo.address, amountToBuyThree));
+                await sale.connect(userOne).buyCratTokens(usdt.address, amountToBuyFour, userTwo.address, await sale.calculateReferralRefundAmount(userOne.address, userTwo.address, amountToBuyFour));
+                await sale.connect(userOne).buyCratTokens(usdt.address, amountToBuyFive, zeroAddress, await sale.calculateReferralRefundAmount(userOne.address, zeroAddress, amountToBuyFive));
+                await sale.connect(userOne).buyCratTokens(usdt.address, amountToBuySix, userOne.address, await sale.calculateReferralRefundAmount(userOne.address, userOne.address, amountToBuySix));
 
                 const totalSaleUsdtBalance = amountToBuyZero.add(amountToBuyOne).add(amountToBuyTwo).add(amountToBuyThree).
                     add(amountToBuyFour).add(amountToBuyFive).add(amountToBuySix);
@@ -793,6 +793,36 @@ describe("CratCrowdsale", function () {
         });
 
         describe("Referral refund", function () {
+            it("Should correctly calculate referral refund", async function () {
+                const { token, sale, usdt, userOne, userTwo } = await loadFixture(deployCrowdsaleFixture);
+
+                const tokensToBuy = withDecimals("400");
+                const refundAmount = withDecimals("40");
+                const zeroAddress = ethers.constants.AddressZero;
+
+                expect(await sale.calculateReferralRefundAmount(userOne.address, userOne.address, tokensToBuy)).equal(0);
+                expect(await sale.calculateReferralRefundAmount(userOne.address, zeroAddress, tokensToBuy)).equal(0);
+                expect(await sale.calculateReferralRefundAmount(userOne.address, userTwo.address, tokensToBuy)).equal(refundAmount);
+
+                await usdt.connect(userOne).approve(sale.address, tokensToBuy);
+                await sale.connect(userOne).buyCratTokens(usdt.address, tokensToBuy, userTwo.address, 0);
+
+                expect(await sale.calculateReferralRefundAmount(userOne.address, userOne.address, tokensToBuy)).equal(refundAmount);
+                expect(await sale.calculateReferralRefundAmount(userOne.address, zeroAddress, tokensToBuy)).equal(refundAmount);
+                expect(await sale.calculateReferralRefundAmount(userOne.address, userTwo.address, tokensToBuy)).equal(refundAmount);
+            });
+
+            it("Should revert if minRefundAMount is not met", async function () {
+                const { token, sale, usdt, userOne, userTwo } = await loadFixture(deployCrowdsaleFixture);
+
+                const tokensToBuy = withDecimals("400");
+                const refundAmount = withDecimals("40");
+
+                await usdt.connect(userOne).approve(sale.address, tokensToBuy);
+                await expect(sale.connect(userOne).buyCratTokens(usdt.address, tokensToBuy, userTwo.address, refundAmount + 1)).revertedWith("CratCrowdsale: minRefundAmount not met");
+                await expect(sale.connect(userOne).buyCratTokens(usdt.address, tokensToBuy, userOne.address, 1)).revertedWith("CratCrowdsale: minRefundAmount not met");
+            });
+            
             it("Should right balances correct new father address buy 2000 tokens", async function () {
                 const { token, sale, usdt, userOne, userTwo } = await loadFixture(deployCrowdsaleFixture);
 
@@ -860,7 +890,7 @@ describe("CratCrowdsale", function () {
                 expect(craftBonusTokensAmount).to.equal(bonusTokensAmount);
 
                 await usdt.connect(userOne).approve(sale.address, tokensToBuy);
-                await sale.connect(userOne).buyCratTokens(usdt.address, tokensToBuy, zeroAddress);
+                await sale.connect(userOne).buyCratTokens(usdt.address, tokensToBuy, zeroAddress, await sale.calculateReferralRefundAmount(userOne.address, zeroAddress, tokensToBuy));
 
                 const saleUsdtBalanceAfter = await usdt.balanceOf(sale.address);
                 const userUsdtBalanceAfter = await usdt.balanceOf(userOne.address);
@@ -900,7 +930,7 @@ describe("CratCrowdsale", function () {
                 expect(craftBonusTokensAmount).to.equal(bonusTokensAmount);
 
                 await usdt.connect(userOne).approve(sale.address, stablesToPay);
-                await sale.connect(userOne).buyCratTokens(usdt.address, stablesToPay, userOne.address);
+                await sale.connect(userOne).buyCratTokens(usdt.address, stablesToPay, userOne.address, await sale.calculateReferralRefundAmount(userOne.address, userOne.address, stablesToPay));
 
                 const saleUsdtBalanceAfter = await usdt.balanceOf(sale.address);
                 const userUsdtBalanceAfter = await usdt.balanceOf(userOne.address);
@@ -926,7 +956,7 @@ describe("CratCrowdsale", function () {
                 const stableAmountOne = withDecimals("100");
 
                 await usdt.connect(userOne).approve(sale.address, stableAmountOne);
-                await sale.connect(userOne).buyCratTokens(usdt.address, stableAmountOne, userTwo.address);
+                await sale.connect(userOne).buyCratTokens(usdt.address, stableAmountOne, userTwo.address, await sale.calculateReferralRefundAmount(userOne.address, userTwo.address, stableAmountOne));
 
                 const fatherAddressAfter = await sale.userInfo(userOne.address);
                 expect(fatherAddressAfter.referralFather).to.equal(userTwo.address);
@@ -951,7 +981,7 @@ describe("CratCrowdsale", function () {
                 expect(craftBonusTokensAmount).to.equal(bonusTokensAmount);
 
                 await usdt.connect(userOne).approve(sale.address, stableAmount);
-                await sale.connect(userOne).buyCratTokens(usdt.address, stableAmount, zeroAddress);
+                await sale.connect(userOne).buyCratTokens(usdt.address, stableAmount, zeroAddress, await sale.calculateReferralRefundAmount(userOne.address, zeroAddress, stableAmount));
 
                 const saleUsdtBalanceAfter = await usdt.balanceOf(sale.address);
                 const userUsdtBalanceAfter = await usdt.balanceOf(userOne.address);
@@ -979,12 +1009,12 @@ describe("CratCrowdsale", function () {
                 const stableAmountTwo = withDecimals("100");
 
                 await usdt.connect(userTwo).approve(sale.address, stableAmountTwo);
-                await sale.connect(userTwo).buyCratTokens(usdt.address, stableAmountTwo, userTwo.address);
+                await sale.connect(userTwo).buyCratTokens(usdt.address, stableAmountTwo, userTwo.address, await sale.calculateReferralRefundAmount(userTwo.address, userTwo.address, stableAmountTwo));
 
                 const stableAmountOne = withDecimals("100");
 
                 await usdt.connect(userOne).approve(sale.address, stableAmountOne);
-                await sale.connect(userOne).buyCratTokens(usdt.address, stableAmountOne, userTwo.address);
+                await sale.connect(userOne).buyCratTokens(usdt.address, stableAmountOne, userTwo.address, await sale.calculateReferralRefundAmount(userOne.address, userTwo.address, stableAmountOne));
 
                 const fatherAddressAfter = await sale.userInfo(userOne.address);
                 expect(fatherAddressAfter.referralFather).to.equal(userTwo.address);
@@ -1009,7 +1039,7 @@ describe("CratCrowdsale", function () {
                 expect(craftBonusTokensAmount).to.equal(bonusTokensAmount);
 
                 await usdt.connect(userOne).approve(sale.address, stableAmount);
-                await sale.connect(userOne).buyCratTokens(usdt.address, stableAmount, admin.address);
+                await sale.connect(userOne).buyCratTokens(usdt.address, stableAmount, admin.address, await sale.calculateReferralRefundAmount(userOne.address, admin.address, stableAmount));
 
                 const saleUsdtBalanceAfter = await usdt.balanceOf(sale.address);
                 const userUsdtBalanceAfter = await usdt.balanceOf(userOne.address);
@@ -1037,12 +1067,12 @@ describe("CratCrowdsale", function () {
                 const stableAmountTwo = withDecimals("100");
 
                 await usdt.connect(userTwo).approve(sale.address, stableAmountTwo);
-                await sale.connect(userTwo).buyCratTokens(usdt.address, stableAmountTwo, userTwo.address);
+                await sale.connect(userTwo).buyCratTokens(usdt.address, stableAmountTwo, userTwo.address, await sale.calculateReferralRefundAmount(userTwo.address, userTwo.address, stableAmountTwo));
 
                 const stableAmountOne = withDecimals("100");
 
                 await usdt.connect(userOne).approve(sale.address, stableAmountOne);
-                await sale.connect(userOne).buyCratTokens(usdt.address, stableAmountOne, userTwo.address);
+                await sale.connect(userOne).buyCratTokens(usdt.address, stableAmountOne, userTwo.address, await sale.calculateReferralRefundAmount(userOne.address, userTwo.address, stableAmountOne));
 
                 const fatherAddressAfter = await sale.userInfo(userOne.address);
                 expect(fatherAddressAfter.referralFather).to.equal(userTwo.address);
@@ -1067,7 +1097,7 @@ describe("CratCrowdsale", function () {
                 expect(craftBonusTokensAmount).to.equal(bonusTokensAmount);
 
                 await usdt.connect(userOne).approve(sale.address, stableAmount);
-                await sale.connect(userOne).buyCratTokens(usdt.address, stableAmount, userOne.address);
+                await sale.connect(userOne).buyCratTokens(usdt.address, stableAmount, userOne.address, await sale.calculateReferralRefundAmount(userOne.address, userOne.address, stableAmount));
 
                 const saleUsdtBalanceAfter = await usdt.balanceOf(sale.address);
                 const userUsdtBalanceAfter = await usdt.balanceOf(userOne.address);
@@ -1094,17 +1124,17 @@ describe("CratCrowdsale", function () {
 
                 const amountToBuy = withDecimals("100");
 
-                await sale.connect(userOne).buyCratTokens(usdt.address, amountToBuy, zeroAddress);
-                await sale.connect(userOne).buyCratTokens(usdt.address, amountToBuy, userOne.address);
-                await sale.connect(userOne).buyCratTokens(usdt.address, amountToBuy, sale.address);
-                await sale.connect(userOne).buyCratTokens(usdt.address, amountToBuy, userTwo.address);
+                await sale.connect(userOne).buyCratTokens(usdt.address, amountToBuy, zeroAddress, await sale.calculateReferralRefundAmount(userOne.address, zeroAddress, amountToBuy));
+                await sale.connect(userOne).buyCratTokens(usdt.address, amountToBuy, userOne.address, await sale.calculateReferralRefundAmount(userOne.address, userOne.address, amountToBuy));
+                await sale.connect(userOne).buyCratTokens(usdt.address, amountToBuy, sale.address, await sale.calculateReferralRefundAmount(userOne.address, sale.address, amountToBuy));
+                await sale.connect(userOne).buyCratTokens(usdt.address, amountToBuy, userTwo.address, await sale.calculateReferralRefundAmount(userOne.address, userTwo.address, amountToBuy));
 
-                await sale.connect(userTwo).buyCratTokens(usdt.address, amountToBuy, userTwo.address);
+                await sale.connect(userTwo).buyCratTokens(usdt.address, amountToBuy, userTwo.address, await sale.calculateReferralRefundAmount(userTwo.address, userTwo.address, amountToBuy));
 
-                await sale.connect(userOne).buyCratTokens(usdt.address, amountToBuy, userTwo.address);
-                await sale.connect(userOne).buyCratTokens(usdt.address, amountToBuy, zeroAddress);
-                await sale.connect(userOne).buyCratTokens(usdt.address, amountToBuy, userOne.address);
-                await sale.connect(userOne).buyCratTokens(usdt.address, amountToBuy, sale.address);
+                await sale.connect(userOne).buyCratTokens(usdt.address, amountToBuy, userTwo.address, await sale.calculateReferralRefundAmount(userOne.address, userTwo.address, amountToBuy));
+                await sale.connect(userOne).buyCratTokens(usdt.address, amountToBuy, zeroAddress, await sale.calculateReferralRefundAmount(userOne.address, zeroAddress, amountToBuy));
+                await sale.connect(userOne).buyCratTokens(usdt.address, amountToBuy, userOne.address, await sale.calculateReferralRefundAmount(userOne.address, userOne.address, amountToBuy));
+                await sale.connect(userOne).buyCratTokens(usdt.address, amountToBuy, sale.address, await sale.calculateReferralRefundAmount(userOne.address, sale.address, amountToBuy));
 
                 const userInfo = await sale.userInfo(userOne.address);
                 expect(userInfo.referralFather).to.equal(sale.address);
@@ -1396,7 +1426,7 @@ describe("CratCrowdsale", function () {
 
             const fatherAmountToPay = withDecimals("1");
             await usdt.connect(userTwo).approve(sale.address, fatherAmountToPay);
-            await sale.connect(userTwo).buyCratTokens(usdt.address, fatherAmountToPay, userOne.address);
+            await sale.connect(userTwo).buyCratTokens(usdt.address, fatherAmountToPay, userOne.address, await sale.calculateReferralRefundAmount(userTwo.address, userOne.address, fatherAmountToPay));
 
             const saleUsdtBalanceBefore = await usdt.balanceOf(sale.address);
             const userUsdtBalanceBefore = await usdt.balanceOf(userOne.address);
@@ -1424,7 +1454,7 @@ describe("CratCrowdsale", function () {
             await sale.connect(admin).changeRefundInterest(newRate);
             await sale.connect(admin).unpause();
             await usdt.connect(userOne).approve(sale.address, stablesToPay);
-            await sale.connect(userOne).buyCratTokens(usdt.address, stablesToPay, userTwo.address);
+            await sale.connect(userOne).buyCratTokens(usdt.address, stablesToPay, userTwo.address, await sale.calculateReferralRefundAmount(userOne.address, userTwo.address, stablesToPay));
 
             const saleUsdtBalanceAfter = await usdt.balanceOf(sale.address);
             const userUsdtBalanceAfter = await usdt.balanceOf(userOne.address);
@@ -1444,7 +1474,7 @@ describe("CratCrowdsale", function () {
 
             const fatherAmountToPay = withDecimals("1");
             await usdt.connect(userTwo).approve(sale.address, fatherAmountToPay);
-            await sale.connect(userTwo).buyCratTokens(usdt.address, fatherAmountToPay, userOne.address);
+            await sale.connect(userTwo).buyCratTokens(usdt.address, fatherAmountToPay, userOne.address, await sale.calculateReferralRefundAmount(userTwo.address, userOne.address, fatherAmountToPay));
 
             const saleUsdtBalanceBefore = await usdt.balanceOf(sale.address);
             const userUsdtBalanceBefore = await usdt.balanceOf(userOne.address);
@@ -1472,7 +1502,7 @@ describe("CratCrowdsale", function () {
             await sale.connect(admin).changeRefundInterest(newRate);
             await sale.connect(admin).unpause();
             await usdt.connect(userOne).approve(sale.address, stablesToPay);
-            await sale.connect(userOne).buyCratTokens(usdt.address, stablesToPay, userTwo.address);
+            await sale.connect(userOne).buyCratTokens(usdt.address, stablesToPay, userTwo.address, await sale.calculateReferralRefundAmount(userOne.address, userTwo.address, stablesToPay));
 
             const saleUsdtBalanceAfter = await usdt.balanceOf(sale.address);
             const userUsdtBalanceAfter = await usdt.balanceOf(userOne.address);
@@ -1515,7 +1545,7 @@ describe("CratCrowdsale", function () {
             const tokensToBuy = await sale.calculateTokensAmount(stableAmount);
 
             await usdt.connect(userOne).approve(sale.address, stableAmount);
-            await sale.connect(userOne).buyCratTokens(usdt.address, stableAmount, userOne.address);
+            await sale.connect(userOne).buyCratTokens(usdt.address, stableAmount, userOne.address, 0);
 
             const cratBalanceAfter = await token.balanceOf(userOne.address);
 
@@ -1536,7 +1566,7 @@ describe("CratCrowdsale", function () {
             const tokensToBuy = withDecimals("1");
 
             await usdt.connect(userOne).approve(sale.address, stableAmount);
-            await expect(sale.connect(userOne).buyCratTokens(usdt.address, tokensToBuy, userOne.address)).to.be.revertedWith(
+            await expect(sale.connect(userOne).buyCratTokens(usdt.address, tokensToBuy, userOne.address, 0)).to.be.revertedWith(
                 "Pausable: paused"
             );
 
@@ -1651,7 +1681,7 @@ describe("CratCrowdsale", function () {
             const stablesToPay = withDecimals("1000");
 
             await usdt.connect(userOne).approve(sale.address, stablesToPay);
-            await sale.connect(userOne).buyCratTokens(usdt.address, stablesToPay, userOne.address);
+            await sale.connect(userOne).buyCratTokens(usdt.address, stablesToPay, userOne.address, await sale.calculateReferralRefundAmount(userOne.address, userOne.address, stablesToPay));
 
             const usdtSaleBalanceBefore = await usdt.balanceOf(sale.address);
             const usdtAdminBalanceBefore = await usdt.balanceOf(admin.address);
@@ -1726,10 +1756,10 @@ describe("CratCrowdsale", function () {
             const stablesToPay = withDecimals("1000");
 
             await usdt.connect(userTwo).approve(sale.address, stablesToPay);
-            await sale.connect(userTwo).buyCratTokens(usdt.address, stablesToPay, userTwo.address);
+            await sale.connect(userTwo).buyCratTokens(usdt.address, stablesToPay, userTwo.address, await sale.calculateReferralRefundAmount(userTwo.address, userTwo.address, stablesToPay));
 
             await usdt.connect(userOne).approve(sale.address, stablesToPay);
-            await sale.connect(userOne).buyCratTokens(usdt.address, stablesToPay, userTwo.address);
+            await sale.connect(userOne).buyCratTokens(usdt.address, stablesToPay, userTwo.address, await sale.calculateReferralRefundAmount(userOne.address, userTwo.address, stablesToPay));
 
             const usdtSaleBalanceBefore = await usdt.balanceOf(sale.address);
             const usdtAdminBalanceBefore = await usdt.balanceOf(admin.address);

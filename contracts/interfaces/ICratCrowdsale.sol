@@ -3,7 +3,7 @@ pragma solidity 0.8.19;
 
 interface ICratCrowdsale{
 
-    function buyCratTokens(address _stableCoin, uint _tokensAmount, address _fatherAddress)external;
+    function buyCratTokens(address _stableCoin, uint _tokensAmount, address _fatherAddress, uint minRefundAmount)external;
 
     function pause()external;
 

@@ -172,7 +172,7 @@ describe("CratD2CPre", function () {
 
             await token.connect(admin).grantRole(crowdsaleRole, sale.address);
             await usdt.connect(user).approve(sale.address, initialSupply);
-            await sale.connect(user).buyCratTokens(usdt.address, stablesAmount, user.address);
+            await sale.connect(user).buyCratTokens(usdt.address, stablesAmount, user.address, 0);
 
             expect(await token.balanceOf(user.address)).to.equal(tokensAmount);
             expect(await token.balanceOf(sale.address)).to.equal(0);
@@ -224,7 +224,7 @@ describe("CratD2CPre", function () {
 
             await token.connect(admin).grantRole(crowdsaleRole, sale.address);
             await usdt.connect(user).approve(sale.address, initialSupply);
-            await sale.connect(user).buyCratTokens(usdt.address, stablesAmount, user.address);
+            await sale.connect(user).buyCratTokens(usdt.address, stablesAmount, user.address, 0);
 
             await token.connect(user).approve(bridge.address, tokensAmount);
 
@@ -249,7 +249,7 @@ describe("CratD2CPre", function () {
             await token.connect(admin).grantRole(bridgeRole, bridge.address);
 
             await usdt.connect(user).approve(sale.address, initialSupply);
-            await sale.connect(user).buyCratTokens(usdt.address, stablesAmount, user.address);
+            await sale.connect(user).buyCratTokens(usdt.address, stablesAmount, user.address, 0);
 
             await token.connect(user).approve(bridge.address, tokensAmount);
             await bridge.connect(user).swap(tokensAmount);
