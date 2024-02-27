@@ -5,7 +5,7 @@ const { ADMIN } = process.env;
 
 async function main() {
 
-    const CratToken = await ethers.getContractFactory("CratToken");
+    const CratToken = await ethers.getContractFactory("CratD2CPre");
     const cratToken = await CratToken.deploy(ADMIN);
     await cratToken.deployed();
     console.log("CratToken deployed, address: ", cratToken.address);

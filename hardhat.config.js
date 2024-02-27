@@ -11,9 +11,9 @@ module.exports = {
     networks: {
         hardhat: {},
         bsc: {
-            url: "https://bsc-dataseed2.binance.org",
+            url: "https://bsc-dataseed.binance.org",
             chainId: 56,
-            gasPrice: 5000000000,
+            gasPrice: 3000000000,
             accounts: [PRIVATE_KEY],
         },
         bscTestnet: {
